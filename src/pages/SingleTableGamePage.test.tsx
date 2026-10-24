@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest'
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -66,6 +66,10 @@ describe('SingleTableGamePage', () => {
     expect(input).toHaveAttribute('inputmode', 'numeric')
     expect(input).toHaveFocus()
     expect(screen.getByText('3 × 1 = ?')).toBeInTheDocument()
+    const stats = screen.getByRole('complementary', { name: 'Informations de la partie' })
+    for (const label of ['Temps', 'Score', 'Coef.', 'Série']) {
+      expect(within(stats).getByText(label)).toBeInTheDocument()
+    }
 
     await user.type(input, '3{Enter}')
 
@@ -107,7 +111,7 @@ describe('SingleTableGamePage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Démarrer' }))
 
-    expect(await screen.findByText(/Question 1 · Toutes les tables/)).toBeInTheDocument()
+    expect(await screen.findByText(/Q1 · Mix/)).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: 'Ta réponse numérique' })).toHaveFocus()
     expect(createGameAttempt).toHaveBeenCalledWith('all_tables', null)
   })

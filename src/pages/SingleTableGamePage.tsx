@@ -378,91 +378,133 @@ function GamePage({ mode }: { mode: PlayableGameMode }) {
 
   return (
     <Stack spacing={2} sx={{ maxWidth: 720, mx: 'auto' }}>
-      <Box className="grid grid-cols-4 gap-2">
-        {[
-          ['Temps', formatSeconds(remainingGameMs)],
-          ['Score', game.score],
-          ['×', `×${game.multiplier}`],
-          ['Série', game.fastStreak],
-        ].map(([label, value]) => (
-          <Paper key={label} variant="outlined" className="p-2 text-center sm:p-3">
-            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 800 }}>
-              {label}
-            </Typography>
-            <Typography variant="h6" component="p">
-              {value}
-            </Typography>
-          </Paper>
-        ))}
-      </Box>
-
       <LinearProgress
         variant="determinate"
         value={(remainingGameMs / (game.settings.gameDurationSeconds * 1000)) * 100}
         color={remainingGameMs <= 10_000 ? 'secondary' : 'primary'}
         aria-label="Temps restant dans la partie"
+        sx={{ height: 6, borderRadius: 999 }}
       />
 
-      <Paper className="p-3 text-center shadow-[0_12px_35px_rgba(72,45,125,0.1)] sm:p-6">
-        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 800 }}>
-          Question {game.question?.position} ·{' '}
-          {game.mode === 'all_tables' ? 'Toutes les tables' : `Table de ${game.selectedTable}`}
-        </Typography>
-        <Typography
-          component="p"
-          sx={{ fontSize: { xs: '2.25rem', sm: '3.5rem' }, fontWeight: 900, my: 2 }}
-        >
-          {game.question?.leftFactor} × {game.question?.rightFactor} = ?
-        </Typography>
-
-        <Box component="form" onSubmit={handleSubmit} noValidate>
-          <Stack spacing={1.5} sx={{ alignItems: 'center' }}>
-            <TextField
-              inputRef={inputRef}
-              value={answer}
-              onChange={(event) => {
-                if (game.status === 'playing') {
-                  setAnswer(event.target.value)
-                }
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '72px minmax(0, 1fr)', sm: '108px minmax(0, 1fr)' },
+          gap: { xs: 1, sm: 2 },
+          alignItems: 'stretch',
+        }}
+      >
+        <Stack component="aside" spacing={1} aria-label="Informations de la partie">
+          {[
+            {
+              label: 'Temps',
+              value: formatSeconds(remainingGameMs),
+              background: remainingGameMs <= 10_000 ? '#fff0e7' : '#f1edff',
+              color: remainingGameMs <= 10_000 ? '#a33c0b' : '#47258f',
+            },
+            { label: 'Score', value: game.score, background: '#f1edff', color: '#47258f' },
+            { label: 'Coef.', value: `×${game.multiplier}`, background: '#fff0e7', color: '#a33c0b' },
+            { label: 'Série', value: game.fastStreak, background: '#e7f7f1', color: '#126653' },
+          ].map((item) => (
+            <Paper
+              key={item.label}
+              variant="outlined"
+              sx={{
+                flex: 1,
+                minHeight: { xs: 54, sm: 66 },
+                px: { xs: 0.5, sm: 1 },
+                py: 0.75,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: item.background,
+                borderColor: 'transparent',
               }}
-              error={Boolean(answerError)}
-              helperText={answerError}
-              label="Réponse"
-              type="text"
-              autoComplete="off"
-              slotProps={{
-                htmlInput: {
-                  inputMode: 'numeric',
-                  pattern: '-?[0-9]*',
-                  'aria-label': 'Ta réponse numérique',
-                  'aria-disabled': game.status !== 'playing',
-                },
-              }}
-              sx={{ maxWidth: 240, width: '100%' }}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={game.status !== 'playing'}
-              onPointerDown={(event) => event.preventDefault()}
-              sx={{ minWidth: 160 }}
             >
-              Valider
-            </Button>
-          </Stack>
-        </Box>
+              <Typography
+                component="span"
+                sx={{ fontSize: { xs: '0.62rem', sm: '0.75rem' }, fontWeight: 800, color: item.color }}
+              >
+                {item.label}
+              </Typography>
+              <Typography
+                component="strong"
+                sx={{
+                  fontSize: { xs: '1rem', sm: '1.3rem' },
+                  fontWeight: 900,
+                  lineHeight: 1.15,
+                  color: item.color,
+                }}
+              >
+                {item.value}
+              </Typography>
+            </Paper>
+          ))}
+        </Stack>
 
-        {game.status === 'feedback' && (
-          <Alert
-            severity={game.feedback?.kind === 'wrong' ? 'error' : 'success'}
-            role="status"
-            aria-live="assertive"
-            sx={{ justifyContent: 'center', mt: 2, py: 0 }}
+        <Paper className="p-2 text-center shadow-[0_12px_35px_rgba(72,45,125,0.1)] sm:p-6">
+          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 800 }}>
+            Q{game.question?.position} ·{' '}
+            {game.mode === 'all_tables' ? 'Mix' : `Table ${game.selectedTable}`}
+          </Typography>
+          <Typography
+            component="p"
+            sx={{ fontSize: { xs: '1.8rem', sm: '3.5rem' }, fontWeight: 900, my: { xs: 1.25, sm: 2 } }}
           >
-            {feedbackText}
-          </Alert>
-        )}
-      </Paper>
+            {game.question?.leftFactor} × {game.question?.rightFactor} = ?
+          </Typography>
+
+          <Box component="form" onSubmit={handleSubmit} noValidate>
+            <Stack spacing={1.25} sx={{ alignItems: 'center' }}>
+              <TextField
+                inputRef={inputRef}
+                value={answer}
+                onChange={(event) => {
+                  if (game.status === 'playing') {
+                    setAnswer(event.target.value)
+                  }
+                }}
+                error={Boolean(answerError)}
+                helperText={answerError}
+                label="Réponse"
+                type="text"
+                size="small"
+                autoComplete="off"
+                slotProps={{
+                  htmlInput: {
+                    inputMode: 'numeric',
+                    pattern: '-?[0-9]*',
+                    'aria-label': 'Ta réponse numérique',
+                    'aria-disabled': game.status !== 'playing',
+                  },
+                }}
+                sx={{ maxWidth: 220, width: '100%' }}
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={game.status !== 'playing'}
+                onPointerDown={(event) => event.preventDefault()}
+                sx={{ minWidth: { xs: 120, sm: 160 } }}
+              >
+                Valider
+              </Button>
+            </Stack>
+          </Box>
+
+          {game.status === 'feedback' && (
+            <Alert
+              severity={game.feedback?.kind === 'wrong' ? 'error' : 'success'}
+              role="status"
+              aria-live="assertive"
+              sx={{ justifyContent: 'center', mt: 1.5, py: 0 }}
+            >
+              {feedbackText}
+            </Alert>
+          )}
+        </Paper>
+      </Box>
 
       <Box>
         <Box className="mb-1 flex justify-between gap-3">
