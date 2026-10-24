@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+:root {
+  font-family: "Nunito", "Segoe UI", system-ui, sans-serif;
+  color: #27213c;
+  background: #fffaf3;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+html,
+body {
+  min-width: 320px;
+  min-height: 100%;
+  background: #fffaf3;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+:focus-visible {
+  outline: 3px solid #f47b36;
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 2000;
+  top: 0.75rem;
+  left: 0.75rem;
+  transform: translateY(-180%);
+  border-radius: 0.75rem;
+  background: #27213c;
+  color: #ffffff;
+  padding: 0.75rem 1rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+#main-content:focus {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .skip-link {
+    transition: none;
+  }
+}
