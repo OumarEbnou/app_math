@@ -4,7 +4,9 @@ import {
   Box,
   Button,
   Container,
+  IconButton,
   Snackbar,
+  Tooltip,
   Toolbar,
   Typography,
 } from '@mui/material'
@@ -38,18 +40,46 @@ export function AppShell({ children }: PropsWithChildren) {
         Aller au contenu principal
       </a>
       <AppBar position="static" color="transparent" elevation={0}>
-        <Toolbar className="border-b border-purple-100 bg-white/90 backdrop-blur">
-          <Container maxWidth="lg" className="flex min-h-16 items-center justify-between gap-3 px-0">
+        <Toolbar
+          className="border-b border-purple-100 bg-white/90 backdrop-blur"
+          sx={{ minHeight: { xs: 56, sm: 64 } }}
+        >
+          <Container maxWidth="lg" className="flex items-center justify-between gap-3 px-0">
             <Link to={profile?.role === 'admin' ? '/admin' : '/eleve'} className="no-underline">
-              <BrandMark />
+              <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+                <BrandMark compact />
+              </Box>
+              <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+                <BrandMark />
+              </Box>
             </Link>
             <Box className="flex items-center gap-2 sm:gap-3">
               <Typography className="hidden sm:block" sx={{ fontWeight: 800 }}>
                 Bonjour, {profile?.display_name}
               </Typography>
-              <Button variant="outlined" onClick={() => void handleSignOut()}>
-                Se déconnecter
-              </Button>
+              <Tooltip title="Se déconnecter">
+                <IconButton
+                  color="primary"
+                  onClick={() => void handleSignOut()}
+                  aria-label="Se déconnecter"
+                  sx={{ border: 1, borderColor: 'divider' }}
+                >
+                  <Box
+                    component="svg"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    sx={{
+                      width: 22,
+                      height: 22,
+                      fill: 'none',
+                      stroke: 'currentColor',
+                      strokeWidth: 2,
+                    }}
+                  >
+                    <path d="M10 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4M14 16l4-4-4-4M18 12H9" />
+                  </Box>
+                </IconButton>
+              </Tooltip>
             </Box>
           </Container>
         </Toolbar>
@@ -96,14 +126,14 @@ export function AppShell({ children }: PropsWithChildren) {
               maxWidth="lg"
               component="nav"
               aria-label="Navigation de l’espace élève"
-              className="flex gap-1 overflow-x-auto py-2"
+              className="flex gap-1 overflow-x-auto py-1.5"
             >
               {[
                 { label: 'Accueil', path: '/eleve', exact: true },
-                { label: 'Jouer · Une table', path: '/eleve/jeu/une-table', exact: false },
-                { label: 'Toutes les tables', path: '/eleve/jeu/toutes-les-tables', exact: false },
-                { label: 'Mon historique', path: '/eleve/historique', exact: false },
-                { label: 'Classements', path: '/eleve/classements', exact: false },
+                { label: '1 table', path: '/eleve/jeu/une-table', exact: false },
+                { label: 'Mix', path: '/eleve/jeu/toutes-les-tables', exact: false },
+                { label: 'Scores', path: '/eleve/historique', exact: false },
+                { label: 'Top', path: '/eleve/classements', exact: false },
               ].map((item) => {
                 const isActive = item.exact
                   ? location.pathname === item.path
@@ -133,7 +163,7 @@ export function AppShell({ children }: PropsWithChildren) {
         tabIndex={-1}
         component="main"
         maxWidth="lg"
-        className="py-8 sm:py-12"
+        className="py-4 sm:py-8"
       >
         {children}
       </Container>

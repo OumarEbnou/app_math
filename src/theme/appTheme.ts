@@ -30,10 +30,50 @@ export const appTheme = createTheme({
   },
   typography: {
     fontFamily: '"Nunito", "Segoe UI", system-ui, sans-serif',
-    h1: { fontWeight: 900 },
-    h2: { fontWeight: 850 },
-    h3: { fontWeight: 800 },
-    button: { fontWeight: 800, textTransform: 'none' },
+    h1: {
+      fontSize: '2.5rem',
+      fontWeight: 900,
+      '@media (max-width:600px)': { fontSize: '1.65rem' },
+    },
+    h2: {
+      fontSize: '2rem',
+      fontWeight: 850,
+      '@media (max-width:600px)': { fontSize: '1.5rem' },
+    },
+    h3: {
+      fontSize: '1.8rem',
+      fontWeight: 800,
+      '@media (max-width:600px)': { fontSize: '1.4rem' },
+    },
+    h4: {
+      fontSize: '1.55rem',
+      fontWeight: 800,
+      '@media (max-width:600px)': { fontSize: '1.25rem' },
+    },
+    h5: {
+      fontSize: '1.3rem',
+      fontWeight: 800,
+      '@media (max-width:600px)': { fontSize: '1.1rem' },
+    },
+    h6: {
+      fontSize: '1.1rem',
+      fontWeight: 800,
+      '@media (max-width:600px)': { fontSize: '0.95rem' },
+    },
+    body1: {
+      fontSize: '1rem',
+      '@media (max-width:600px)': { fontSize: '0.9rem' },
+    },
+    body2: {
+      fontSize: '0.875rem',
+      '@media (max-width:600px)': { fontSize: '0.8rem' },
+    },
+    button: {
+      fontSize: '0.9rem',
+      fontWeight: 800,
+      textTransform: 'none',
+      '@media (max-width:600px)': { fontSize: '0.8rem' },
+    },
   },
   components: {
     MuiButton: {

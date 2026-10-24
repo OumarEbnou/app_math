@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Chip,
   FormControl,
   InputLabel,
   MenuItem,
@@ -50,13 +49,8 @@ export function LeaderboardPage({ adminView = false }: LeaderboardPageProps = {}
         />
       ) : (
         <Box>
-          <Chip label="Top élèves" color="primary" className="mb-4" />
-          <Typography variant="h3" component="h1" gutterBottom>
-            Classements
-          </Typography>
-          <Typography color="text.secondary">
-            Un seul meilleur score par élève, avec {settingsQuery.data?.leaderboardSize ?? 5}{' '}
-            places au maximum.
+          <Typography variant="h4" component="h1">
+            Top
           </Typography>
         </Box>
       )}
@@ -72,8 +66,8 @@ export function LeaderboardPage({ adminView = false }: LeaderboardPageProps = {}
               setMode(event.target.value === 'all_tables' ? 'all_tables' : 'single_table')
             }}
           >
-            <MenuItem value="single_table">Une table</MenuItem>
-            <MenuItem value="all_tables">Toutes les tables</MenuItem>
+            <MenuItem value="single_table">1 table</MenuItem>
+            <MenuItem value="all_tables">Mix</MenuItem>
           </Select>
         </FormControl>
         {mode === 'single_table' && (
@@ -105,7 +99,7 @@ export function LeaderboardPage({ adminView = false }: LeaderboardPageProps = {}
             to={mode === 'all_tables' ? '/eleve/jeu/toutes-les-tables' : '/eleve/jeu/une-table'}
             variant="contained"
           >
-            Jouer à ce mode
+            Jouer
           </Button>
         )}
       </Box>
@@ -128,11 +122,11 @@ export function LeaderboardPage({ adminView = false }: LeaderboardPageProps = {}
       ) : (
         <Stack spacing={2} component="ol" sx={{ p: 0, m: 0, listStyle: 'none' }}>
           {leaderboardQuery.data?.map((entry) => (
-            <Paper key={`${entry.position}-${entry.displayName}`} component="li" variant="outlined" className="p-5">
-              <Box className="flex items-center gap-4">
+            <Paper key={`${entry.position}-${entry.displayName}`} component="li" variant="outlined" className="p-3 sm:p-4">
+              <Box className="flex items-center gap-3">
                 <Box
                   aria-label={`Position ${entry.position}`}
-                  className="grid size-12 shrink-0 place-items-center rounded-full bg-purple-100 text-xl font-black text-purple-800"
+                  className="grid size-10 shrink-0 place-items-center rounded-full bg-purple-100 font-black text-purple-800 sm:size-12 sm:text-xl"
                 >
                   {entry.position}
                 </Box>
@@ -144,7 +138,7 @@ export function LeaderboardPage({ adminView = false }: LeaderboardPageProps = {}
                     {formatDateTime(entry.endedAt)}
                   </Typography>
                 </Box>
-                <Typography variant="h5" color="primary.main" sx={{ fontWeight: 900 }}>
+                <Typography variant="h6" color="primary.main" sx={{ fontWeight: 900 }}>
                   {entry.score} pts
                 </Typography>
               </Box>

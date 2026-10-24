@@ -60,7 +60,7 @@ describe('SingleTableGamePage', () => {
       </MemoryRouter>,
     )
 
-    await user.click(screen.getByRole('button', { name: 'Démarrer la partie' }))
+    await user.click(screen.getByRole('button', { name: 'Démarrer' }))
     const input = await screen.findByRole('textbox', { name: 'Ta réponse numérique' })
 
     expect(input).toHaveAttribute('inputmode', 'numeric')
@@ -70,7 +70,29 @@ describe('SingleTableGamePage', () => {
     await user.type(input, '3{Enter}')
 
     expect(await screen.findByText('Bravo ! +1')).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Ta réponse numérique' })).toBe(input)
+    expect(input).toHaveFocus()
     expect(createGameAttempt).toHaveBeenCalledWith('single_table', 3)
+  })
+
+  it('garde le clavier focalisé après une validation tactile', async () => {
+    const user = userEvent.setup()
+    render(
+      <MemoryRouter initialEntries={['/eleve/jeu/une-table/3']}>
+        <Routes>
+          <Route path="/eleve/jeu/une-table/:table" element={<SingleTableGamePage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Démarrer' }))
+    const input = await screen.findByRole('textbox', { name: 'Ta réponse numérique' })
+    await user.type(input, '3')
+    await user.click(screen.getByRole('button', { name: 'Valider' }))
+
+    expect(await screen.findByText('Bravo ! +1')).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Ta réponse numérique' })).toBe(input)
+    expect(input).toHaveFocus()
   })
 
   it('démarre le mode Toutes les tables avec le même écran', async () => {
@@ -83,7 +105,7 @@ describe('SingleTableGamePage', () => {
       </MemoryRouter>,
     )
 
-    await user.click(screen.getByRole('button', { name: 'Démarrer la partie' }))
+    await user.click(screen.getByRole('button', { name: 'Démarrer' }))
 
     expect(await screen.findByText(/Question 1 · Toutes les tables/)).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: 'Ta réponse numérique' })).toHaveFocus()

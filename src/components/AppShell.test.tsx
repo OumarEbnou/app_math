@@ -51,9 +51,10 @@ describe('AppShell accessible', () => {
     )
     expect(screen.getByRole('main')).toHaveAttribute('id', 'main-content')
     expect(screen.getByRole('main')).toHaveFocus()
-    expect(screen.getByRole('link', { name: 'Mon historique' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Scores' })).toHaveAttribute(
       'aria-current',
       'page',
     )
+    expect(screen.getByRole('button', { name: 'Se déconnecter' })).toBeInTheDocument()
   })
 })

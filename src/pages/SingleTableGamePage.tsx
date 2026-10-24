@@ -2,7 +2,6 @@ import {
   Alert,
   Box,
   Button,
-  Chip,
   CircularProgress,
   LinearProgress,
   Paper,
@@ -10,7 +9,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   advanceQuestion,
@@ -23,7 +22,7 @@ import {
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import type { GameState, PlayableGameMode, SavedGameResult } from '../models/Game'
 import { createGameAttempt, saveGame } from '../services/gameService'
-import { calculateAccuracy, formatDateTime } from '../utils/formatters'
+import { calculateAccuracy } from '../utils/formatters'
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
 
@@ -68,16 +67,16 @@ function ResultPanel({
   const scoreMismatch = savedResult !== null && savedResult.officialScore !== game.score
 
   return (
-    <Stack spacing={3}>
+    <Stack spacing={{ xs: 2, sm: 3 }} sx={{ maxWidth: 760, mx: 'auto' }}>
       <Box className="text-center">
-        <Typography aria-hidden="true" sx={{ fontSize: '4rem' }}>
+        <Typography aria-hidden="true" sx={{ fontSize: { xs: '2rem', sm: '3rem' } }}>
           🏆
         </Typography>
-        <Typography variant="h3" component="h1" gutterBottom>
+        <Typography variant="h5" component="h1">
           Partie terminée !
         </Typography>
-        <Typography variant="h2" color="primary.main">
-          {score} points
+        <Typography variant="h3" color="primary.main" sx={{ mt: 0.5 }}>
+          {score} pts
         </Typography>
       </Box>
 
@@ -109,7 +108,7 @@ function ResultPanel({
         </Alert>
       )}
 
-      <Box className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <Box className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {[
           ['Mode', game.mode === 'all_tables' ? 'Toutes les tables' : `Table de ${game.selectedTable}`],
           ['Questions validées', totalQuestions],
@@ -131,21 +130,16 @@ function ResultPanel({
               ]
             : []),
         ].map(([label, value]) => (
-          <Paper key={label} variant="outlined" className="p-4 text-center">
-            <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 800 }}>
+          <Paper key={label} variant="outlined" className="p-2 text-center sm:p-3">
+            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 800 }}>
               {label}
             </Typography>
-            <Typography variant="h5" component="p" sx={{ mt: 0.5 }}>
+            <Typography variant="h6" component="p" sx={{ mt: 0.25 }}>
               {value}
             </Typography>
           </Paper>
         ))}
       </Box>
-
-      <Typography color="text.secondary" className="text-center">
-        Partie du{' '}
-        {formatDateTime(savedResult?.startedAt ?? new Date(game.startedAtMs).toISOString())}
-      </Typography>
 
       <Stack
         spacing={2}
@@ -153,13 +147,14 @@ function ResultPanel({
       >
         <Button
           variant="contained"
+          size="small"
           onClick={onReplay}
           disabled={isStarting || saveStatus === 'saving'}
         >
           {isStarting ? 'Préparation…' : 'Rejouer'}
         </Button>
-        <Button component={Link} to="/eleve" variant="outlined">
-          Retour à l’accueil
+        <Button component={Link} to="/eleve" variant="outlined" size="small">
+          Accueil
         </Button>
       </Stack>
     </Stack>
@@ -323,6 +318,7 @@ function GamePage({ mode }: { mode: PlayableGameMode }) {
     validationLockRef.current = true
     const result = submitAnswer(game, Number(answer), readClock())
     setGame(result.state)
+    inputRef.current?.focus({ preventScroll: true })
     if (!result.accepted && !result.expired) {
       validationLockRef.current = false
     }
@@ -330,11 +326,6 @@ function GamePage({ mode }: { mode: PlayableGameMode }) {
 
   const remainingGameMs = game ? getRemainingGameTimeMs(game, nowMs) : 0
   const remainingFastMs = game ? getRemainingFastTimeMs(game, nowMs) : 0
-  const correctAnswers = useMemo(
-    () => game?.answers.filter((item) => item.isCorrect).length ?? 0,
-    [game?.answers],
-  )
-
   if (!isValidSelection) {
     return (
       <Alert severity="error" action={<Button component={Link} to="/eleve/jeu/une-table">Choisir</Button>}>
@@ -359,22 +350,17 @@ function GamePage({ mode }: { mode: PlayableGameMode }) {
 
   if (!game) {
     return (
-      <Stack spacing={3} sx={{ alignItems: 'center' }} className="py-8 text-center">
-        <Chip label={`Jeu · ${mode === 'all_tables' ? 'Toutes les tables' : 'Une table'}`} color="primary" />
-        <Typography variant="h3" component="h1">
+      <Stack spacing={2} sx={{ alignItems: 'center' }} className="py-4 text-center">
+        <Typography variant="h4" component="h1">
           {modeLabel}
         </Typography>
-        <Typography color="text.secondary" sx={{ maxWidth: 560 }}>
-          Le chronomètre démarrera après le clic. Les paramètres seront figés par Supabase pour
-          toute la partie.
-        </Typography>
         {startError && <Alert severity="error">{startError}</Alert>}
-        <Button variant="contained" size="large" onClick={() => void beginGame()} disabled={isStarting}>
-          {isStarting ? 'Préparation…' : 'Démarrer la partie'}
+        <Button variant="contained" onClick={() => void beginGame()} disabled={isStarting}>
+          {isStarting ? 'Préparation…' : 'Démarrer'}
         </Button>
         {mode === 'single_table' && (
           <Button component={Link} to="/eleve/jeu/une-table">
-            Choisir une autre table
+            Autre table
           </Button>
         )}
       </Stack>
@@ -391,19 +377,19 @@ function GamePage({ mode }: { mode: PlayableGameMode }) {
           : ''
 
   return (
-    <Stack spacing={3} sx={{ maxWidth: 820, mx: 'auto' }}>
-      <Box className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+    <Stack spacing={2} sx={{ maxWidth: 720, mx: 'auto' }}>
+      <Box className="grid grid-cols-4 gap-2">
         {[
           ['Temps', formatSeconds(remainingGameMs)],
           ['Score', game.score],
-          ['Multiplicateur', `×${game.multiplier}`],
-          ['Série rapide', game.fastStreak],
+          ['×', `×${game.multiplier}`],
+          ['Série', game.fastStreak],
         ].map(([label, value]) => (
-          <Paper key={label} variant="outlined" className="p-3 text-center">
+          <Paper key={label} variant="outlined" className="p-2 text-center sm:p-3">
             <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 800 }}>
               {label}
             </Typography>
-            <Typography variant="h5" component="p">
+            <Typography variant="h6" component="p">
               {value}
             </Typography>
           </Paper>
@@ -417,50 +403,61 @@ function GamePage({ mode }: { mode: PlayableGameMode }) {
         aria-label="Temps restant dans la partie"
       />
 
-      <Paper className="p-5 text-center shadow-[0_18px_55px_rgba(72,45,125,0.12)] sm:p-8">
-        <Typography color="text.secondary" sx={{ fontWeight: 800 }}>
+      <Paper className="p-3 text-center shadow-[0_12px_35px_rgba(72,45,125,0.1)] sm:p-6">
+        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 800 }}>
           Question {game.question?.position} ·{' '}
           {game.mode === 'all_tables' ? 'Toutes les tables' : `Table de ${game.selectedTable}`}
         </Typography>
         <Typography
           component="p"
-          sx={{ fontSize: { xs: '3rem', sm: '4.5rem' }, fontWeight: 900, my: 3 }}
+          sx={{ fontSize: { xs: '2.25rem', sm: '3.5rem' }, fontWeight: 900, my: 2 }}
         >
           {game.question?.leftFactor} × {game.question?.rightFactor} = ?
         </Typography>
 
-        {game.status === 'playing' ? (
-          <Box component="form" onSubmit={handleSubmit} noValidate>
-            <Stack spacing={2} sx={{ alignItems: 'center' }}>
-              <TextField
-                inputRef={inputRef}
-                value={answer}
-                onChange={(event) => setAnswer(event.target.value)}
-                error={Boolean(answerError)}
-                helperText={answerError ?? 'Valide avec Entrée ou le bouton.'}
-                label="Ta réponse"
-                type="text"
-                autoComplete="off"
-                slotProps={{
-                  htmlInput: {
-                    inputMode: 'numeric',
-                    pattern: '-?[0-9]*',
-                    'aria-label': 'Ta réponse numérique',
-                  },
-                }}
-                sx={{ maxWidth: 280, width: '100%' }}
-              />
-              <Button type="submit" variant="contained" size="large" sx={{ minWidth: 200 }}>
-                Valider
-              </Button>
-            </Stack>
-          </Box>
-        ) : (
+        <Box component="form" onSubmit={handleSubmit} noValidate>
+          <Stack spacing={1.5} sx={{ alignItems: 'center' }}>
+            <TextField
+              inputRef={inputRef}
+              value={answer}
+              onChange={(event) => {
+                if (game.status === 'playing') {
+                  setAnswer(event.target.value)
+                }
+              }}
+              error={Boolean(answerError)}
+              helperText={answerError}
+              label="Réponse"
+              type="text"
+              autoComplete="off"
+              slotProps={{
+                htmlInput: {
+                  inputMode: 'numeric',
+                  pattern: '-?[0-9]*',
+                  'aria-label': 'Ta réponse numérique',
+                  'aria-disabled': game.status !== 'playing',
+                },
+              }}
+              sx={{ maxWidth: 240, width: '100%' }}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={game.status !== 'playing'}
+              onPointerDown={(event) => event.preventDefault()}
+              sx={{ minWidth: 160 }}
+            >
+              Valider
+            </Button>
+          </Stack>
+        </Box>
+
+        {game.status === 'feedback' && (
           <Alert
             severity={game.feedback?.kind === 'wrong' ? 'error' : 'success'}
             role="status"
             aria-live="assertive"
-            sx={{ justifyContent: 'center' }}
+            sx={{ justifyContent: 'center', mt: 2, py: 0 }}
           >
             {feedbackText}
           </Alert>
@@ -470,7 +467,7 @@ function GamePage({ mode }: { mode: PlayableGameMode }) {
       <Box>
         <Box className="mb-1 flex justify-between gap-3">
           <Typography variant="body2" sx={{ fontWeight: 800 }}>
-            Délai rapide
+            Rapide
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {game.status === 'playing' ? formatSeconds(remainingFastMs) : 'Question suivante…'}
@@ -484,10 +481,6 @@ function GamePage({ mode }: { mode: PlayableGameMode }) {
         />
       </Box>
 
-      <Typography color="text.secondary" className="text-center">
-        {correctAnswers} bonne{correctAnswers > 1 ? 's' : ''} réponse
-        {correctAnswers > 1 ? 's' : ''} validée{correctAnswers > 1 ? 's' : ''}
-      </Typography>
     </Stack>
   )
 }
