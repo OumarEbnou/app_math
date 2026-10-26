@@ -1,6 +1,6 @@
 import {
-  Button,
   Chip,
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -8,8 +8,10 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
   Typography,
 } from '@mui/material'
+import { AppIcon } from '../AppIcon'
 import type { GameSessionSummary } from '../../models/Admin'
 import { calculateAccuracy, formatDateTime, formatGameMode } from '../../utils/formatters'
 
@@ -55,9 +57,16 @@ export function SessionsTable({ sessions, onDelete }: SessionsTableProps) {
               <TableCell>{formatDateTime(session.endedAt)}</TableCell>
               {onDelete && (
                 <TableCell align="right">
-                  <Button color="error" size="small" onClick={() => onDelete(session)}>
-                    Supprimer
-                  </Button>
+                  <Tooltip title="Supprimer">
+                    <IconButton
+                      color="error"
+                      size="small"
+                      onClick={() => onDelete(session)}
+                      aria-label={`Supprimer le score de ${session.studentName}`}
+                    >
+                      <AppIcon name="trash" size={20} />
+                    </IconButton>
+                  </Tooltip>
                 </TableCell>
               )}
             </TableRow>

@@ -9,6 +9,7 @@ import type {
   StudentListOptions,
   UpdateStudentInput,
 } from '../models/Admin'
+import { normalizeUsername } from '../utils/username'
 import { getSupabaseClient } from './supabaseClient'
 
 type UnknownRecord = Record<string, unknown>
@@ -42,7 +43,7 @@ function parseStudent(value: unknown): AdminStudent {
   const row = toRecord(value)
   return {
     id: toStringValue(row.id),
-    email: toStringValue(row.email),
+    username: toStringValue(row.username),
     displayName: toStringValue(row.display_name, 'Élève'),
     isActive: toBooleanValue(row.is_active),
     createdAt: toStringValue(row.created_at),
@@ -227,7 +228,7 @@ export async function getStudent(studentId: string): Promise<AdminStudent> {
 
 export async function createStudent(input: CreateStudentInput): Promise<void> {
   await invokeAdminFunction('create-student', {
-    email: input.email.trim().toLowerCase(),
+    username: normalizeUsername(input.username),
     password: input.password,
     displayName: input.displayName.trim(),
   })
@@ -237,7 +238,7 @@ export async function updateStudent(input: UpdateStudentInput): Promise<void> {
   await invokeAdminFunction('manage-student', {
     action: 'update-identity',
     studentId: input.studentId,
-    email: input.email.trim().toLowerCase(),
+    username: normalizeUsername(input.username),
     displayName: input.displayName.trim(),
   })
 }

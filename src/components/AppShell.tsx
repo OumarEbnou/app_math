@@ -13,6 +13,28 @@ import {
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { BrandMark } from './BrandMark'
+import { AppIcon, type AppIconName } from './AppIcon'
+
+const adminNavigation: Array<{ label: string; path: string; icon: AppIconName }> = [
+  { label: 'Tableau de bord', path: '/admin', icon: 'home' },
+  { label: 'Élèves', path: '/admin/eleves', icon: 'students' },
+  { label: 'Résultats', path: '/admin/resultats', icon: 'scores' },
+  { label: 'Classements', path: '/admin/classements', icon: 'trophy' },
+  { label: 'Paramètres', path: '/admin/parametres', icon: 'settings' },
+]
+
+const studentNavigation: Array<{
+  label: string
+  path: string
+  exact: boolean
+  icon: AppIconName
+}> = [
+  { label: 'Accueil', path: '/eleve', exact: true, icon: 'home' },
+  { label: '1 table', path: '/eleve/jeu/une-table', exact: false, icon: 'table' },
+  { label: 'Mix', path: '/eleve/jeu/toutes-les-tables', exact: false, icon: 'mix' },
+  { label: 'Scores', path: '/eleve/historique', exact: false, icon: 'scores' },
+  { label: 'Top', path: '/eleve/classements', exact: false, icon: 'trophy' },
+]
 
 export function AppShell({ children }: PropsWithChildren) {
   const { profile, signOut } = useAuth()
@@ -64,20 +86,7 @@ export function AppShell({ children }: PropsWithChildren) {
                   aria-label="Se déconnecter"
                   sx={{ border: 1, borderColor: 'divider' }}
                 >
-                  <Box
-                    component="svg"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                    sx={{
-                      width: 22,
-                      height: 22,
-                      fill: 'none',
-                      stroke: 'currentColor',
-                      strokeWidth: 2,
-                    }}
-                  >
-                    <path d="M10 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4M14 16l4-4-4-4M18 12H9" />
-                  </Box>
+                  <AppIcon name="power" />
                 </IconButton>
               </Tooltip>
             </Box>
@@ -91,13 +100,7 @@ export function AppShell({ children }: PropsWithChildren) {
               aria-label="Navigation de l’administration"
               className="flex gap-1 overflow-x-auto py-2"
             >
-              {[
-                { label: 'Tableau de bord', path: '/admin' },
-                { label: 'Élèves', path: '/admin/eleves' },
-                { label: 'Résultats', path: '/admin/resultats' },
-                { label: 'Classements', path: '/admin/classements' },
-                { label: 'Paramètres', path: '/admin/parametres' },
-              ].map((item) => {
+              {adminNavigation.map((item) => {
                 const isActive =
                   item.path === '/admin'
                     ? location.pathname === item.path
@@ -111,9 +114,13 @@ export function AppShell({ children }: PropsWithChildren) {
                     size="small"
                     variant={isActive ? 'contained' : 'text'}
                     aria-current={isActive ? 'page' : undefined}
-                    sx={{ minWidth: 'max-content' }}
+                    aria-label={item.label}
+                    sx={{ minWidth: { xs: 44, sm: 'max-content' }, gap: { xs: 0, sm: 0.75 }, px: { xs: 1.25, sm: 1.5 } }}
                   >
-                    {item.label}
+                    <AppIcon name={item.icon} size={20} />
+                    <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+                      {item.label}
+                    </Box>
                   </Button>
                 )
               })}
@@ -128,13 +135,7 @@ export function AppShell({ children }: PropsWithChildren) {
               aria-label="Navigation de l’espace élève"
               className="flex gap-1 overflow-x-auto py-1.5"
             >
-              {[
-                { label: 'Accueil', path: '/eleve', exact: true },
-                { label: '1 table', path: '/eleve/jeu/une-table', exact: false },
-                { label: 'Mix', path: '/eleve/jeu/toutes-les-tables', exact: false },
-                { label: 'Scores', path: '/eleve/historique', exact: false },
-                { label: 'Top', path: '/eleve/classements', exact: false },
-              ].map((item) => {
+              {studentNavigation.map((item) => {
                 const isActive = item.exact
                   ? location.pathname === item.path
                   : location.pathname.startsWith(item.path)
@@ -147,9 +148,13 @@ export function AppShell({ children }: PropsWithChildren) {
                     size="small"
                     variant={isActive ? 'contained' : 'text'}
                     aria-current={isActive ? 'page' : undefined}
-                    sx={{ minWidth: 'max-content' }}
+                    aria-label={item.label}
+                    sx={{ minWidth: { xs: 44, sm: 'max-content' }, gap: { xs: 0, sm: 0.75 }, px: { xs: 1.25, sm: 1.5 } }}
                   >
-                    {item.label}
+                    <AppIcon name={item.icon} size={20} />
+                    <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+                      {item.label}
+                    </Box>
                   </Button>
                 )
               })}

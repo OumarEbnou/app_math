@@ -1,4 +1,5 @@
-import { Alert, Box, Button, CircularProgress, Paper, Typography } from '@mui/material'
+import { Alert, Box, CircularProgress, IconButton, Paper, Tooltip, Typography } from '@mui/material'
+import { AppIcon } from '../AppIcon'
 
 export function SectionLoader({ label = 'Chargement des données…' }: { label?: string }) {
   return (
@@ -15,9 +16,11 @@ export function QueryError({ message, onRetry }: { message: string; onRetry?: ()
       severity="error"
       action={
         onRetry ? (
-          <Button color="inherit" size="small" onClick={onRetry}>
-            Réessayer
-          </Button>
+          <Tooltip title="Réessayer">
+            <IconButton color="inherit" size="small" onClick={onRetry} aria-label="Réessayer">
+              <AppIcon name="replay" size={20} />
+            </IconButton>
+          </Tooltip>
         ) : undefined
       }
     >

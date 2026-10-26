@@ -1,15 +1,20 @@
 import type { AuthChangeEvent, Session, User } from '@supabase/supabase-js'
 import type { Profile } from '../models/Profile'
+import { resolveLoginEmail } from '../utils/username'
 import { getSupabaseClient } from './supabaseClient'
 
 export interface LoginCredentials {
-  email: string
+  username: string
   password: string
 }
 
 export async function signInWithPassword(credentials: LoginCredentials): Promise<User> {
   const client = getSupabaseClient()
-  const { data, error } = await client.auth.signInWithPassword(credentials)
+  const email = resolveLoginEmail(credentials.username)
+  const { data, error } = await client.auth.signInWithPassword({
+    email,
+    password: credentials.password,
+  })
 
   if (error) {
     throw new Error('Identifiant ou mot de passe incorrect.')
@@ -46,7 +51,7 @@ export async function getProfile(userId: string): Promise<Profile> {
   const client = getSupabaseClient()
   const { data, error } = await client
     .from('profiles')
-    .select('id, role, display_name, is_active, created_at, updated_at')
+    .select('id, role, username, display_name, is_active, created_at, updated_at')
     .eq('id', userId)
     .single()
 

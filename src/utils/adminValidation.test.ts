@@ -62,14 +62,24 @@ describe('validation de l’administration', () => {
 
   it('valide le compte élève et le mot de passe', () => {
     const errors = validateCreateStudent({
-      email: 'adresse-invalide',
+      username: 'Élève invalide',
       displayName: '',
       password: 'court',
     })
 
     expect(hasValidationErrors(errors)).toBe(true)
-    expect(errors.email).toBeDefined()
+    expect(errors.username).toBeDefined()
     expect(errors.displayName).toBeDefined()
     expect(validatePassword('motdepasse-solide')).toBeNull()
+  })
+
+  it('accepte un nom d’utilisateur normalisé', () => {
+    expect(
+      validateCreateStudent({
+        username: 'esma_3',
+        displayName: 'Esma',
+        password: 'motdepasse-solide',
+      }),
+    ).toEqual({})
   })
 })

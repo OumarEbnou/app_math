@@ -31,26 +31,26 @@ export function StudentFormDialog({
   onCreate,
   onUpdate,
 }: StudentFormDialogProps) {
-  const [email, setEmail] = useState(student?.email ?? '')
+  const [username, setUsername] = useState(student?.username ?? '')
   const [displayName, setDisplayName] = useState(student?.displayName ?? '')
   const [password, setPassword] = useState('')
-  const [errors, setErrors] = useState<Partial<Record<'email' | 'displayName' | 'password', string>>>({})
+  const [errors, setErrors] = useState<Partial<Record<'username' | 'displayName' | 'password', string>>>({})
   const isEditing = Boolean(student)
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     if (student) {
-      const validation = validateStudentIdentity({ email, displayName })
+      const validation = validateStudentIdentity({ username, displayName })
       setErrors(validation)
       if (hasValidationErrors(validation)) {
         return
       }
-      await onUpdate({ studentId: student.id, email, displayName })
+      await onUpdate({ studentId: student.id, username, displayName })
       return
     }
 
-    const input = { email, displayName, password }
+    const input = { username, displayName, password }
     const validation = validateCreateStudent(input)
     setErrors(validation)
     if (hasValidationErrors(validation)) {
@@ -76,15 +76,16 @@ export function StudentFormDialog({
             slotProps={{ htmlInput: { maxLength: 80 } }}
           />
           <TextField
-            label="Adresse e-mail de connexion"
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            error={Boolean(errors.email)}
-            helperText={errors.email}
+            label="Nom d’utilisateur"
+            type="text"
+            value={username}
+            onChange={(event) => setUsername(event.target.value.toLowerCase())}
+            error={Boolean(errors.username)}
+            helperText={errors.username ?? '3 à 32 caractères : lettres minuscules, chiffres, _ ou -.'}
             autoComplete="off"
             required
             disabled={busy}
+            slotProps={{ htmlInput: { maxLength: 32, autoCapitalize: 'none', spellCheck: false } }}
           />
           {!isEditing && (
             <TextField

@@ -22,7 +22,7 @@ export function LoginPage() {
   const { signIn, error, clearError, isConfigured } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -32,7 +32,7 @@ export function LoginPage() {
     setIsSubmitting(true)
 
     try {
-      const profile = await signIn({ email: email.trim(), password })
+      const profile = await signIn({ username: username.trim(), password })
       const requestedPath = (location.state as { from?: string } | null)?.from
       const roleHome = getHomePath(profile.role)
       const destination = requestedPath?.startsWith(roleHome) ? requestedPath : roleHome
@@ -77,15 +77,16 @@ export function LoginPage() {
               <Box component="form" onSubmit={(event) => void handleSubmit(event)} noValidate>
                 <Stack spacing={2.5}>
                   <TextField
-                    id="email"
-                    label="Adresse e-mail"
-                    type="email"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
+                    id="username"
+                    label="Nom d’utilisateur"
+                    type="text"
+                    value={username}
+                    onChange={(event) => setUsername(event.target.value)}
                     autoComplete="username"
                     required
                     fullWidth
                     disabled={!isConfigured || isSubmitting}
+                    slotProps={{ htmlInput: { autoCapitalize: 'none', spellCheck: false } }}
                   />
                   <TextField
                     id="password"
@@ -102,7 +103,7 @@ export function LoginPage() {
                     type="submit"
                     size="large"
                     variant="contained"
-                    disabled={!isConfigured || isSubmitting || !email.trim() || !password}
+                    disabled={!isConfigured || isSubmitting || !username.trim() || !password}
                   >
                     {isSubmitting ? (
                       <CircularProgress size={24} color="inherit" aria-label="Connexion en cours" />

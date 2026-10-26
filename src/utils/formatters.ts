@@ -12,6 +12,17 @@ export function formatDateTime(value: string): string {
   }).format(date)
 }
 
+export function formatDate(value: string): string {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    return '—'
+  }
+
+  return new Intl.DateTimeFormat('fr-FR', {
+    dateStyle: 'short',
+  }).format(date)
+}
+
 export function formatGameMode(mode: GameMode, selectedTable: number | null): string {
   if (mode === 'all_tables') {
     return 'Toutes les tables'

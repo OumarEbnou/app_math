@@ -10,6 +10,7 @@ import { AppShell } from './AppShell'
 const studentProfile: Profile = {
   id: '00000000-0000-4000-8000-000000000001',
   role: 'student',
+  username: 'etoile',
   display_name: 'Étoile',
   is_active: true,
   created_at: '2026-10-24T10:00:00.000Z',

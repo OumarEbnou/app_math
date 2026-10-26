@@ -1,26 +1,24 @@
 import {
   Box,
   Button,
-  Pagination,
   Paper,
   Stack,
   Typography,
 } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { EmptyState, QueryError, SectionLoader } from '../components/admin/QueryState'
+import { AppIcon } from '../components/AppIcon'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
-import { getGameHistory } from '../services/gameService'
-
-const pageSize = 20
+import { getPersonalBestScores } from '../services/gameService'
+import { formatDate } from '../utils/formatters'
 
 export function SingleTableHistoryPage() {
   useDocumentTitle('Scores')
-  const [page, setPage] = useState(0)
   const historyQuery = useQuery({
-    queryKey: ['game-history', 'scores', page],
-    queryFn: () => getGameHistory({ mode: '', selectedTable: null, page, pageSize }),
+    queryKey: ['personal-best-scores'],
+    queryFn: () => getPersonalBestScores(5),
+    refetchOnMount: 'always',
   })
 
   return (
@@ -29,8 +27,8 @@ export function SingleTableHistoryPage() {
         <Typography variant="h4" component="h1">
           Scores
         </Typography>
-        <Button component={Link} to="/eleve" variant="contained" size="small">
-          Jouer
+        <Button component={Link} to="/eleve" variant="contained" size="small" aria-label="Jouer">
+          <AppIcon name="play" />
         </Button>
       </Box>
 
@@ -41,32 +39,40 @@ export function SingleTableHistoryPage() {
           message="Ton historique n’a pas pu être chargé."
           onRetry={() => void historyQuery.refetch()}
         />
-      ) : historyQuery.data.items.length === 0 ? (
+      ) : historyQuery.data.length === 0 ? (
         <EmptyState
-          title="Aucune partie trouvée"
-          description="Joue une première partie ou choisis un autre filtre."
+          title="Aucun score"
+          description="Joue une première partie pour remplir ton top 5."
         />
       ) : (
-        <>
-          <Box className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-            {historyQuery.data.items.map((session) => (
-              <Paper key={session.id} variant="outlined" className="p-3 text-center sm:p-4">
-                <Typography variant="h6" component="p" color="primary.main" sx={{ fontWeight: 900 }}>
+        <Stack component="ol" spacing={1.5} sx={{ m: 0, p: 0, listStyle: 'none' }}>
+          {historyQuery.data.map((session, index) => (
+            <Paper
+              key={session.id}
+              component="li"
+              variant="outlined"
+              className="overflow-hidden"
+              sx={{ borderColor: index === 0 ? 'primary.light' : 'divider' }}
+            >
+              <Box className="flex min-h-16 items-center gap-3 p-3 sm:min-h-20 sm:gap-4 sm:p-4">
+                <Box
+                  aria-label={`Position ${index + 1}`}
+                  className="grid size-10 shrink-0 place-items-center rounded-full bg-purple-100 text-lg font-black text-purple-800 sm:size-12 sm:text-xl"
+                >
+                  {index + 1}
+                </Box>
+                <Box className="min-w-0 flex-1">
+                  <Typography color="text.secondary" variant="body2">
+                    {formatDate(session.endedAt)}
+                  </Typography>
+                </Box>
+                <Typography variant="h5" component="p" color="primary.main" sx={{ fontWeight: 900 }}>
                   {session.score} pts
                 </Typography>
-              </Paper>
-            ))}
-          </Box>
-          {historyQuery.data.total > pageSize && (
-            <Pagination
-              count={Math.ceil(historyQuery.data.total / pageSize)}
-              page={page + 1}
-              onChange={(_, nextPage) => setPage(nextPage - 1)}
-              color="primary"
-              className="self-center"
-            />
-          )}
-        </>
+              </Box>
+            </Paper>
+          ))}
+        </Stack>
       )}
     </Stack>
   )

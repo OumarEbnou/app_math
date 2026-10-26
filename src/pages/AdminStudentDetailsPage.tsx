@@ -1,8 +1,9 @@
-import { Alert, Box, Button, Chip, Paper, Stack, TablePagination, Typography } from '@mui/material'
+import { Alert, Box, IconButton, Chip, Paper, Stack, TablePagination, Tooltip, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { AdminPageHeader } from '../components/admin/AdminPageHeader'
+import { AppIcon } from '../components/AppIcon'
 import { EmptyState, QueryError, SectionLoader } from '../components/admin/QueryState'
 import { SessionsTable } from '../components/admin/SessionsTable'
 import { StatCard } from '../components/admin/StatCard'
@@ -56,9 +57,11 @@ export function AdminStudentDetailsPage() {
         title={student.displayName}
         description="Consultez les statistiques et les dernières parties de cet élève."
         action={
-          <Button component={Link} to="/admin/eleves" variant="outlined">
-            Retour aux élèves
-          </Button>
+          <Tooltip title="Retour aux élèves">
+            <IconButton component={Link} to="/admin/eleves" aria-label="Retour aux élèves" color="primary">
+              <AppIcon name="students" />
+            </IconButton>
+          </Tooltip>
         }
       />
 
@@ -68,7 +71,7 @@ export function AdminStudentDetailsPage() {
             <Typography color="text.secondary" variant="body2">
               Identifiant de connexion
             </Typography>
-            <Typography sx={{ fontWeight: 800 }}>{student.email}</Typography>
+            <Typography sx={{ fontWeight: 800 }}>{student.username}</Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
               Compte créé le {formatDateTime(student.createdAt)}
             </Typography>

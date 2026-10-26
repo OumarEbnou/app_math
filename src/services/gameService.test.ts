@@ -4,6 +4,7 @@ import {
   createGameAttempt,
   getGameHistory,
   getLeaderboard,
+  getPersonalBestScores,
   saveGame,
 } from './gameService'
 
@@ -190,5 +191,43 @@ describe('gameService', () => {
         endedAt: '2026-10-24T10:01:00.000Z',
       },
     ])
+  })
+
+  it('charge les cinq meilleurs scores personnels dans le bon ordre', async () => {
+    const scoresResult = {
+      data: [
+        {
+          id: 'score-1',
+          mode: 'single_table',
+          selected_table: 3,
+          score: 30,
+          total_questions: 10,
+          correct_answers: 10,
+          wrong_answers: 0,
+          best_fast_streak: 8,
+          max_multiplier_reached: 4,
+          average_answer_time_ms: 700,
+          started_at: '2026-10-25T10:00:00.000Z',
+          ended_at: '2026-10-25T10:01:00.000Z',
+        },
+      ],
+      error: null,
+    }
+    const scoresBuilder = {
+      select: vi.fn(),
+      order: vi.fn(),
+      limit: vi.fn().mockResolvedValue(scoresResult),
+    }
+    scoresBuilder.select.mockReturnValue(scoresBuilder)
+    scoresBuilder.order.mockReturnValue(scoresBuilder)
+    from.mockReturnValueOnce(scoresBuilder as never)
+
+    const scores = await getPersonalBestScores()
+
+    expect(scoresBuilder.order).toHaveBeenNthCalledWith(1, 'score', { ascending: false })
+    expect(scoresBuilder.order).toHaveBeenNthCalledWith(2, 'ended_at', { ascending: false })
+    expect(scoresBuilder.limit).toHaveBeenCalledWith(5)
+    expect(scores).toHaveLength(1)
+    expect(scores[0]).toMatchObject({ id: 'score-1', score: 30 })
   })
 })

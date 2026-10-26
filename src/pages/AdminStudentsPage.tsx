@@ -5,6 +5,7 @@ import {
   Button,
   Chip,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Paper,
@@ -18,11 +19,13 @@ import {
   TablePagination,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { AdminPageHeader } from '../components/admin/AdminPageHeader'
+import { AppIcon } from '../components/AppIcon'
 import { ConfirmDialog } from '../components/admin/ConfirmDialog'
 import { EmptyState, QueryError, SectionLoader } from '../components/admin/QueryState'
 import { PasswordResetDialog } from '../components/admin/PasswordResetDialog'
@@ -150,7 +153,10 @@ export function AdminStudentsPage() {
         description="Créez les accès, gérez les pseudonymes et contrôlez les comptes autorisés."
         action={
           <Button variant="contained" onClick={() => setCreateOpen(true)}>
-            Créer un élève
+            <AppIcon name="userPlus" size={20} />
+            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' }, ml: 1 }}>
+              Créer un élève
+            </Box>
           </Button>
         }
       />
@@ -168,7 +174,7 @@ export function AdminStudentsPage() {
           className="grid gap-3 md:grid-cols-[minmax(220px,1fr)_190px_150px_auto]"
         >
           <TextField
-            label="Rechercher un pseudonyme ou e-mail"
+            label="Rechercher un pseudonyme ou identifiant"
             value={searchDraft}
             onChange={(event) => setSearchDraft(event.target.value)}
             size="small"
@@ -188,7 +194,7 @@ export function AdminStudentsPage() {
               }
             >
               <MenuItem value="display_name">Pseudonyme</MenuItem>
-              <MenuItem value="email">E-mail</MenuItem>
+              <MenuItem value="username">Identifiant</MenuItem>
               <MenuItem value="created_at">Date de création</MenuItem>
               <MenuItem value="total_sessions">Nombre de parties</MenuItem>
               <MenuItem value="best_score">Meilleur score</MenuItem>
@@ -212,8 +218,8 @@ export function AdminStudentsPage() {
               <MenuItem value="desc">Décroissant</MenuItem>
             </Select>
           </FormControl>
-          <Button type="submit" variant="outlined">
-            Rechercher
+          <Button type="submit" variant="outlined" aria-label="Rechercher">
+            <AppIcon name="search" size={20} />
           </Button>
         </Box>
       </Paper>
@@ -252,7 +258,7 @@ export function AdminStudentsPage() {
                     <TableCell>
                       <Typography sx={{ fontWeight: 800 }}>{student.displayName}</Typography>
                     </TableCell>
-                    <TableCell>{student.email}</TableCell>
+                    <TableCell>{student.username}</TableCell>
                     <TableCell>
                       <Chip
                         size="small"
@@ -265,22 +271,44 @@ export function AdminStudentsPage() {
                     <TableCell>{formatDateTime(student.createdAt)}</TableCell>
                     <TableCell align="right">
                       <Box className="flex justify-end gap-1">
-                        <Button component={Link} to={`/admin/eleves/${student.id}`} size="small">
-                          Historique
-                        </Button>
-                        <Button size="small" onClick={() => setEditingStudent(student)}>
-                          Modifier
-                        </Button>
-                        <Button size="small" onClick={() => setPasswordStudent(student)}>
-                          Mot de passe
-                        </Button>
-                        <Button
-                          size="small"
-                          color={student.isActive ? 'error' : 'success'}
-                          onClick={() => setStatusStudent(student)}
-                        >
-                          {student.isActive ? 'Désactiver' : 'Activer'}
-                        </Button>
+                        <Tooltip title="Historique">
+                          <IconButton
+                            component={Link}
+                            to={`/admin/eleves/${student.id}`}
+                            size="small"
+                            aria-label={`Historique de ${student.displayName}`}
+                          >
+                            <AppIcon name="history" size={19} />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Modifier">
+                          <IconButton
+                            size="small"
+                            onClick={() => setEditingStudent(student)}
+                            aria-label={`Modifier ${student.displayName}`}
+                          >
+                            <AppIcon name="edit" size={19} />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Mot de passe">
+                          <IconButton
+                            size="small"
+                            onClick={() => setPasswordStudent(student)}
+                            aria-label={`Réinitialiser le mot de passe de ${student.displayName}`}
+                          >
+                            <AppIcon name="key" size={19} />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title={student.isActive ? 'Désactiver' : 'Activer'}>
+                          <IconButton
+                            size="small"
+                            color={student.isActive ? 'error' : 'success'}
+                            onClick={() => setStatusStudent(student)}
+                            aria-label={`${student.isActive ? 'Désactiver' : 'Activer'} ${student.displayName}`}
+                          >
+                            <AppIcon name="power" size={19} />
+                          </IconButton>
+                        </Tooltip>
                       </Box>
                     </TableCell>
                   </TableRow>

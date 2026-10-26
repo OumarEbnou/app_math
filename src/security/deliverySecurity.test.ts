@@ -31,6 +31,7 @@ describe('contrat de sécurité de livraison', () => {
       '202610230002_admin_security.sql',
       '202610230003_single_table_game.sql',
       '202610240004_all_tables_and_leaderboards.sql',
+      '202610250005_username_auth.sql',
     ])
   })
 

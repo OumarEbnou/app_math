@@ -14,6 +14,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AdminPageHeader } from '../components/admin/AdminPageHeader'
 import { EmptyState, QueryError, SectionLoader } from '../components/admin/QueryState'
+import { AppIcon } from '../components/AppIcon'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import type { PlayableGameMode } from '../models/Game'
 import { getActiveGameSettings, getLeaderboard } from '../services/gameService'
@@ -98,8 +99,9 @@ export function LeaderboardPage({ adminView = false }: LeaderboardPageProps = {}
             component={Link}
             to={mode === 'all_tables' ? '/eleve/jeu/toutes-les-tables' : '/eleve/jeu/une-table'}
             variant="contained"
+            aria-label="Jouer"
           >
-            Jouer
+            <AppIcon name="play" />
           </Button>
         )}
       </Box>

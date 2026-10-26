@@ -1,18 +1,17 @@
 import type { CreateStudentInput, GameSettings, UpdateStudentInput } from '../models/Admin'
+import { isValidUsername } from './username'
 
 export type ValidationErrors<T extends string> = Partial<Record<T, string>>
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
 export function validateStudentIdentity(
-  input: Pick<UpdateStudentInput, 'email' | 'displayName'>,
-): ValidationErrors<'email' | 'displayName'> {
-  const errors: ValidationErrors<'email' | 'displayName'> = {}
-  const email = input.email.trim()
+  input: Pick<UpdateStudentInput, 'username' | 'displayName'>,
+): ValidationErrors<'username' | 'displayName'> {
+  const errors: ValidationErrors<'username' | 'displayName'> = {}
+  const username = input.username.trim()
   const displayName = input.displayName.trim()
 
-  if (!emailPattern.test(email) || email.length > 254) {
-    errors.email = 'Saisissez une adresse e-mail valide.'
+  if (!isValidUsername(username)) {
+    errors.username = 'Utilisez 3 à 32 caractères : lettres minuscules, chiffres, _ ou -.'
   }
 
   if (displayName.length < 1 || displayName.length > 80) {
@@ -32,7 +31,7 @@ export function validatePassword(password: string): string | null {
 
 export function validateCreateStudent(
   input: CreateStudentInput,
-): ValidationErrors<'email' | 'displayName' | 'password'> {
+): ValidationErrors<'username' | 'displayName' | 'password'> {
   return {
     ...validateStudentIdentity(input),
     ...(validatePassword(input.password) ? { password: validatePassword(input.password)! } : {}),

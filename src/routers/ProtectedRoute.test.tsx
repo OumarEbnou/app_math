@@ -9,6 +9,7 @@ import { ProtectedRoute } from './ProtectedRoute'
 const adminProfile: Profile = {
   id: '00000000-0000-4000-8000-000000000001',
   role: 'admin',
+  username: 'admin_test',
   display_name: 'Admin',
   is_active: true,
   created_at: '2026-10-23T00:00:00.000Z',

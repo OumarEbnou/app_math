@@ -3,8 +3,8 @@ import {
   Alert,
   Autocomplete,
   Box,
-  Button,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Paper,
@@ -12,9 +12,11 @@ import {
   Stack,
   TablePagination,
   TextField,
+  Tooltip,
 } from '@mui/material'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AdminPageHeader } from '../components/admin/AdminPageHeader'
+import { AppIcon } from '../components/AppIcon'
 import { DeleteScoreDialog } from '../components/admin/DeleteScoreDialog'
 import { EmptyState, QueryError, SectionLoader } from '../components/admin/QueryState'
 import { SessionsTable } from '../components/admin/SessionsTable'
@@ -114,7 +116,7 @@ export function AdminResultsPage() {
               setSelectedStudent(student)
               setFilters((current) => ({ ...current, studentId: student?.id ?? '', page: 0 }))
             }}
-            getOptionLabel={(student) => `${student.displayName} — ${student.email}`}
+            getOptionLabel={(student) => `${student.displayName} — ${student.username}`}
             isOptionEqualToValue={(option, value) => option.id === value.id}
             loading={studentsQuery.isPending}
             renderInput={(params) => <TextField {...params} label="Élève" size="small" />}
@@ -181,7 +183,11 @@ export function AdminResultsPage() {
           />
         </Box>
         <Box className="mt-4 flex justify-end">
-          <Button onClick={clearFilters}>Effacer les filtres</Button>
+          <Tooltip title="Effacer les filtres">
+            <IconButton onClick={clearFilters} aria-label="Effacer les filtres">
+              <AppIcon name="trash" size={20} />
+            </IconButton>
+          </Tooltip>
         </Box>
       </Paper>
 

@@ -2,7 +2,7 @@ export type GameMode = 'single_table' | 'all_tables'
 
 export interface AdminStudent {
   id: string
-  email: string
+  username: string
   displayName: string
   isActive: boolean
   createdAt: string
@@ -56,7 +56,7 @@ export interface DashboardData {
 
 export interface StudentListOptions {
   search: string
-  sortBy: 'display_name' | 'email' | 'created_at' | 'total_sessions' | 'best_score'
+  sortBy: 'display_name' | 'username' | 'created_at' | 'total_sessions' | 'best_score'
   sortDirection: 'asc' | 'desc'
   page: number
   pageSize: number
@@ -73,13 +73,13 @@ export interface ResultFilters {
 }
 
 export interface CreateStudentInput {
-  email: string
+  username: string
   password: string
   displayName: string
 }
 
 export interface UpdateStudentInput {
   studentId: string
-  email: string
+  username: string
   displayName: string
 }

@@ -3,10 +3,12 @@ import {
   Box,
   Button,
   CircularProgress,
+  IconButton,
   LinearProgress,
   Paper,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material'
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
@@ -23,6 +25,7 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import type { GameState, PlayableGameMode, SavedGameResult } from '../models/Game'
 import { createGameAttempt, saveGame } from '../services/gameService'
 import { calculateAccuracy } from '../utils/formatters'
+import { AppIcon } from '../components/AppIcon'
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
 
@@ -94,9 +97,11 @@ function ResultPanel({
         <Alert
           severity="error"
           action={
-            <Button color="inherit" size="small" onClick={onRetrySave}>
-              Réessayer
-            </Button>
+            <Tooltip title="Réessayer">
+              <IconButton color="inherit" size="small" onClick={onRetrySave} aria-label="Réessayer">
+                <AppIcon name="replay" size={20} />
+              </IconButton>
+            </Tooltip>
           }
         >
           {saveError}
@@ -141,21 +146,31 @@ function ResultPanel({
         ))}
       </Box>
 
-      <Stack
-        spacing={2}
-        sx={{ flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'center' }}
-      >
-        <Button
-          variant="contained"
-          size="small"
-          onClick={onReplay}
-          disabled={isStarting || saveStatus === 'saving'}
-        >
-          {isStarting ? 'Préparation…' : 'Rejouer'}
-        </Button>
-        <Button component={Link} to="/eleve" variant="outlined" size="small">
-          Accueil
-        </Button>
+      <Stack direction="row" spacing={2} sx={{ justifyContent: 'center' }}>
+        <Tooltip title={isStarting ? 'Préparation…' : 'Rejouer'}>
+          <span>
+            <IconButton
+              color="primary"
+              onClick={onReplay}
+              disabled={isStarting || saveStatus === 'saving'}
+              aria-label="Rejouer"
+              sx={{ width: 52, height: 52, border: 1, borderColor: 'primary.main' }}
+            >
+              {isStarting ? <CircularProgress size={22} /> : <AppIcon name="replay" size={26} />}
+            </IconButton>
+          </span>
+        </Tooltip>
+        <Tooltip title="Accueil">
+          <IconButton
+            component={Link}
+            to="/eleve"
+            color="primary"
+            aria-label="Accueil"
+            sx={{ width: 52, height: 52, border: 1, borderColor: 'divider' }}
+          >
+            <AppIcon name="home" size={26} />
+          </IconButton>
+        </Tooltip>
       </Stack>
     </Stack>
   )

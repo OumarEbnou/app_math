@@ -1,6 +1,7 @@
 import { Box, Button, Stack, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { FeatureCard } from '../components/FeatureCard'
+import { AppIcon } from '../components/AppIcon'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
@@ -22,7 +23,8 @@ export function StudentHomePage() {
           accent="purple"
           action={
             <Button component={Link} to="/eleve/jeu/une-table" variant="contained" fullWidth>
-              Jouer
+              <AppIcon name="play" />
+              <Box component="span" className="sr-only">Jouer à une table</Box>
             </Button>
           }
         />
@@ -32,7 +34,8 @@ export function StudentHomePage() {
           accent="orange"
           action={
             <Button component={Link} to="/eleve/jeu/toutes-les-tables" variant="contained" color="secondary" fullWidth>
-              Jouer
+              <AppIcon name="play" />
+              <Box component="span" className="sr-only">Jouer au mix</Box>
             </Button>
           }
         />
@@ -42,7 +45,8 @@ export function StudentHomePage() {
           accent="green"
           action={
             <Button component={Link} to="/eleve/historique" variant="outlined" fullWidth>
-              Voir
+              <AppIcon name="scores" />
+              <Box component="span" className="sr-only">Voir mes scores</Box>
             </Button>
           }
         />

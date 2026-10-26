@@ -203,6 +203,22 @@ export async function getGameHistory(options: {
   }
 }
 
+export async function getPersonalBestScores(limit = 5): Promise<GameHistoryItem[]> {
+  const client = getSupabaseClient()
+  const safeLimit = Math.min(Math.max(Math.trunc(limit), 1), 20)
+  const { data, error } = await client
+    .from('game_sessions')
+    .select(
+      'id, mode, selected_table, score, total_questions, correct_answers, wrong_answers, best_fast_streak, max_multiplier_reached, average_answer_time_ms, started_at, ended_at',
+    )
+    .order('score', { ascending: false })
+    .order('ended_at', { ascending: false })
+    .limit(safeLimit)
+
+  throwSupabaseError(error, 'Impossible de charger tes meilleurs scores.')
+  return (data ?? []).map(parseHistoryItem)
+}
+
 export async function getLeaderboard(
   mode: PlayableGameMode,
   selectedTable: number | null,
