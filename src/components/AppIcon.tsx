@@ -1,6 +1,7 @@
 import { Box } from '@mui/material'
 
 export type AppIconName =
+  | 'check'
   | 'edit'
   | 'history'
   | 'home'
@@ -19,6 +20,7 @@ export type AppIconName =
   | 'userPlus'
 
 const iconPaths: Record<AppIconName, string[]> = {
+  check: ['m5 12 4 4L19 6'],
   home: ['M3 11.5 12 4l9 7.5', 'M5.5 10v10h13V10', 'M9.5 20v-6h5v6'],
   replay: ['M5 8V3m0 0h5M5 3l3 3', 'M5.5 8a8 8 0 1 1-1 7'],
   play: ['m8 5 11 7-11 7Z'],

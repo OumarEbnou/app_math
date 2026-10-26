@@ -308,7 +308,7 @@ function GamePage({ mode }: { mode: PlayableGameMode }) {
 
   useEffect(() => {
     if (gameStatus === 'playing') {
-      inputRef.current?.focus()
+      inputRef.current?.focus({ preventScroll: true })
     }
   }, [gameStatus, game?.question?.position])
 
@@ -392,24 +392,37 @@ function GamePage({ mode }: { mode: PlayableGameMode }) {
           : ''
 
   return (
-    <Stack spacing={2} sx={{ maxWidth: 720, mx: 'auto' }}>
+    <Stack
+      spacing={{ xs: 0.75, sm: 2 }}
+      sx={{
+        maxWidth: { xs: 'none', sm: 720 },
+        mx: 'auto',
+        position: { xs: 'fixed', sm: 'static' },
+        inset: { xs: 0, sm: 'auto' },
+        zIndex: { xs: 1300, sm: 'auto' },
+        width: { xs: '100%', sm: 'auto' },
+        p: { xs: 1, sm: 0 },
+        overflow: 'hidden',
+        backgroundColor: 'background.default',
+      }}
+    >
       <LinearProgress
         variant="determinate"
         value={(remainingGameMs / (game.settings.gameDurationSeconds * 1000)) * 100}
         color={remainingGameMs <= 10_000 ? 'secondary' : 'primary'}
         aria-label="Temps restant dans la partie"
-        sx={{ height: 6, borderRadius: 999 }}
+        sx={{ display: { xs: 'none', sm: 'block' }, height: 6, borderRadius: 999 }}
       />
 
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '72px minmax(0, 1fr)', sm: '108px minmax(0, 1fr)' },
-          gap: { xs: 1, sm: 2 },
+          gridTemplateColumns: { xs: '62px minmax(0, 1fr)', sm: '108px minmax(0, 1fr)' },
+          gap: { xs: 0.75, sm: 2 },
           alignItems: 'stretch',
         }}
       >
-        <Stack component="aside" spacing={1} aria-label="Informations de la partie">
+        <Stack component="aside" spacing={{ xs: 0.5, sm: 1 }} aria-label="Informations de la partie">
           {[
             {
               label: 'Temps',
@@ -426,9 +439,9 @@ function GamePage({ mode }: { mode: PlayableGameMode }) {
               variant="outlined"
               sx={{
                 flex: 1,
-                minHeight: { xs: 54, sm: 66 },
+                minHeight: { xs: 42, sm: 66 },
                 px: { xs: 0.5, sm: 1 },
-                py: 0.75,
+                py: { xs: 0.25, sm: 0.75 },
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -439,14 +452,14 @@ function GamePage({ mode }: { mode: PlayableGameMode }) {
             >
               <Typography
                 component="span"
-                sx={{ fontSize: { xs: '0.62rem', sm: '0.75rem' }, fontWeight: 800, color: item.color }}
+                sx={{ fontSize: { xs: '0.55rem', sm: '0.75rem' }, fontWeight: 800, color: item.color }}
               >
                 {item.label}
               </Typography>
               <Typography
                 component="strong"
                 sx={{
-                  fontSize: { xs: '1rem', sm: '1.3rem' },
+                  fontSize: { xs: '0.9rem', sm: '1.3rem' },
                   fontWeight: 900,
                   lineHeight: 1.15,
                   color: item.color,
@@ -458,20 +471,38 @@ function GamePage({ mode }: { mode: PlayableGameMode }) {
           ))}
         </Stack>
 
-        <Paper className="p-2 text-center shadow-[0_12px_35px_rgba(72,45,125,0.1)] sm:p-6">
+        <Paper className="text-center shadow-[0_12px_35px_rgba(72,45,125,0.1)]" sx={{ p: { xs: 1, sm: 3 } }}>
           <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 800 }}>
             Q{game.question?.position} ·{' '}
             {game.mode === 'all_tables' ? 'Mix' : `Table ${game.selectedTable}`}
           </Typography>
           <Typography
             component="p"
-            sx={{ fontSize: { xs: '1.8rem', sm: '3.5rem' }, fontWeight: 900, my: { xs: 1.25, sm: 2 } }}
+            sx={{ fontSize: { xs: '1.65rem', sm: '3.5rem' }, fontWeight: 900, my: { xs: 0.35, sm: 2 } }}
           >
             {game.question?.leftFactor} × {game.question?.rightFactor} = ?
           </Typography>
 
+          <Box sx={{ mb: { xs: 0.75, sm: 1.5 }, textAlign: 'left' }}>
+            <Box className="mb-0.5 flex justify-between gap-2">
+              <Typography variant="caption" sx={{ fontWeight: 800 }}>
+                Rapide
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {game.status === 'playing' ? formatSeconds(remainingFastMs) : 'Suite…'}
+              </Typography>
+            </Box>
+            <LinearProgress
+              variant="determinate"
+              color="success"
+              value={(remainingFastMs / game.settings.fastAnswerLimitMs) * 100}
+              aria-label="Temps restant pour une réponse rapide"
+              sx={{ height: { xs: 5, sm: 7 }, borderRadius: 999 }}
+            />
+          </Box>
+
           <Box component="form" onSubmit={handleSubmit} noValidate>
-            <Stack spacing={1.25} sx={{ alignItems: 'center' }}>
+            <Stack direction="row" spacing={1} sx={{ alignItems: 'flex-start', justifyContent: 'center' }}>
               <TextField
                 inputRef={inputRef}
                 value={answer}
@@ -501,9 +532,10 @@ function GamePage({ mode }: { mode: PlayableGameMode }) {
                 variant="contained"
                 disabled={game.status !== 'playing'}
                 onPointerDown={(event) => event.preventDefault()}
-                sx={{ minWidth: { xs: 120, sm: 160 } }}
+                aria-label="Valider"
+                sx={{ minWidth: 48, width: 48, px: 0, flexShrink: 0 }}
               >
-                Valider
+                <AppIcon name="check" size={24} />
               </Button>
             </Stack>
           </Box>
@@ -513,29 +545,20 @@ function GamePage({ mode }: { mode: PlayableGameMode }) {
               severity={game.feedback?.kind === 'wrong' ? 'error' : 'success'}
               role="status"
               aria-live="assertive"
-              sx={{ justifyContent: 'center', mt: 1.5, py: 0 }}
+              sx={{
+                justifyContent: 'center',
+                mt: { xs: 0.75, sm: 1.5 },
+                py: 0,
+                '& .MuiAlert-message': {
+                  py: { xs: 0.25, sm: 1 },
+                  fontSize: { xs: '0.72rem', sm: '0.875rem' },
+                },
+              }}
             >
               {feedbackText}
             </Alert>
           )}
         </Paper>
-      </Box>
-
-      <Box>
-        <Box className="mb-1 flex justify-between gap-3">
-          <Typography variant="body2" sx={{ fontWeight: 800 }}>
-            Rapide
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {game.status === 'playing' ? formatSeconds(remainingFastMs) : 'Question suivante…'}
-          </Typography>
-        </Box>
-        <LinearProgress
-          variant="determinate"
-          color="success"
-          value={(remainingFastMs / game.settings.fastAnswerLimitMs) * 100}
-          aria-label="Temps restant pour une réponse rapide"
-        />
       </Box>
 
     </Stack>

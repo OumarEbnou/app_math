@@ -65,6 +65,11 @@ describe('SingleTableGamePage', () => {
 
     expect(input).toHaveAttribute('inputmode', 'numeric')
     expect(input).toHaveFocus()
+    const quickTimer = screen.getByRole('progressbar', {
+      name: 'Temps restant pour une réponse rapide',
+    })
+    expect(quickTimer).toBeVisible()
+    expect(quickTimer.compareDocumentPosition(input) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     expect(screen.getByText('3 × 1 = ?')).toBeInTheDocument()
     const stats = screen.getByRole('complementary', { name: 'Informations de la partie' })
     for (const label of ['Temps', 'Score', 'Coef.', 'Série']) {
