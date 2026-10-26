@@ -64,6 +64,7 @@ describe('SingleTableGamePage', () => {
     const input = await screen.findByRole('textbox', { name: 'Ta réponse numérique' })
 
     expect(input).toHaveAttribute('inputmode', 'numeric')
+    expect(input).toHaveAttribute('enterkeyhint', 'done')
     expect(input).toHaveFocus()
     const quickTimer = screen.getByRole('progressbar', {
       name: 'Temps restant pour une réponse rapide',

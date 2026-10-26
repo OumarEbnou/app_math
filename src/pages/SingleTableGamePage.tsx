@@ -520,6 +520,7 @@ function GamePage({ mode }: { mode: PlayableGameMode }) {
                 slotProps={{
                   htmlInput: {
                     inputMode: 'numeric',
+                    enterKeyHint: 'done',
                     pattern: '-?[0-9]*',
                     'aria-label': 'Ta réponse numérique',
                     'aria-disabled': game.status !== 'playing',
